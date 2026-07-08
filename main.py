@@ -6,12 +6,15 @@
 # See the solution video in the 100 Days of Python Course for explainations.
 
 import os
-API_KEY = "f500a7e58d36e1391083b33be63a4bc7"
+API_KEY = os.environ.get("API_KEY")
 lat=42.5
 lon=0.00
+
+proxy = os.environ.get("proxy")
+phone= os.environ.get("phone")
 from twilio.rest import Client
-account_sid = "AC0b69f3b0bd0e50ffaf68650bee82b4d9"
-auth_token = "014fd195dda91166c1d6cc628d2243df"
+account_sid = os.environ.get("account_sid")
+auth_token = os.environ.get("auth_token")
 
 import requests
 response = requests.get(url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&cnt=4")
@@ -26,7 +29,7 @@ if Rain:
     client = Client(account_sid, auth_token)
     message = client.messages.create(
         body="It is going to rain today ⛈, Make sure to bring an Umbrella☔",
-        from_='+16592745718',
-        to='+917979011500'
+        from_=proxy,
+        to=phone
     )
     print(message.status)
