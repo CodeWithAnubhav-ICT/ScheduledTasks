@@ -10,11 +10,11 @@ API_KEY = os.environ.get("API_KEY")
 lat=42.5
 lon=0.00
 
-proxy = os.environ.get("proxy")
-phone= os.environ.get("phone")
+PROXY = os.environ.get("PROXY")
+PHONE= os.environ.get("PHONE")
 from twilio.rest import Client
-account_sid = os.environ.get("account_sid")
-auth_token = os.environ.get("auth_token")
+ACCOUNT_SID = os.environ.get("ACCOUNT_SID")
+AUTH_TOKEN = os.environ.get("AUTH_TOKEN")
 
 import requests
 response = requests.get(url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&cnt=4")
@@ -26,10 +26,10 @@ for i in range (0,4):
         Rain = True
 
 if Rain:
-    client = Client(account_sid, auth_token)
+    client = Client(ACCOUNT_SID, AUTH_TOKEN)
     message = client.messages.create(
         body="It is going to rain today ⛈, Make sure to bring an Umbrella☔",
-        from_=proxy,
-        to=phone
+        from_=PROXY,
+        to=PHONE
     )
     print(message.status)
