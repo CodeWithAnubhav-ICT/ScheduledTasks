@@ -7,8 +7,8 @@
 
 import os
 API_KEY = os.environ.get("API_KEY")
-lat=42.5
-lon=0.00
+lat=29.7500
+lon=77.7166
 
 PROXY = os.environ.get("PROXY")
 PHONE= os.environ.get("PHONE")
@@ -33,3 +33,10 @@ if Rain:
         to=PHONE
     )
     print(message.status)
+else:
+    client = Client(ACCOUNT_SID, AUTH_TOKEN)
+    message = client.messages.create(
+        body="Weather is all clear today, Have fun!!!",
+        from_=PROXY,
+        to=PHONE
+    )
