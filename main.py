@@ -6,37 +6,49 @@
 # See the solution video in the 100 Days of Python Course for explainations.
 
 import os
-API_KEY = os.environ.get("API_KEY")
-lat=29.7500
-lon=77.7166
-
-PROXY = os.environ.get("PROXY")
-PHONE= os.environ.get("PHONE")
+import requests
 from twilio.rest import Client
+
+# 1. Fetch environment variables
+API_KEY = os.environ.get("API_KEY")
+PROXY = os.environ.get("PROXY")
+PHONE = os.environ.get("PHONE")
 ACCOUNT_SID = os.environ.get("ACCOUNT_SID")
 AUTH_TOKEN = os.environ.get("AUTH_TOKEN")
 
-import requests
-response = requests.get(url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&cnt=4")
+# Quick debug check: This will print a helpful error in your GitHub logs if a secret is missing
+if not ACCOUNT_SID or not AUTH_TOKEN:
+    raise ValueError("CRITICAL ERROR: Twilio ACCOUNT_SID or AUTH_TOKEN is missing from environment variables!")
+
+lat = 29.7500
+lon = 77.7166
+
+# 2. Fetch Weather Data
+url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&cnt=4"
+response = requests.get(url)
 response.raise_for_status()
 data = response.json()
-Rain = False
-for i in range (0,4):
-    if data["list"][i]["weather"][0]["id"] < 700 :
-        Rain = True
 
+# 3. Check for Rain
+Rain = False
+for item in data["list"][:4]:  # Cleaner and safer loop approach
+    if item["weather"][0]["id"] < 700:
+        Rain = True
+        break
+
+# 4. Set the message text based on the weather
 if Rain:
-    client = Client(ACCOUNT_SID, AUTH_TOKEN)
-    message = client.messages.create(
-        body="It is going to rain today ⛈, Make sure to bring an Umbrella☔",
-        from_=PROXY,
-        to=PHONE
-    )
-    print(message.status)
+    sms_body = "It is going to rain today ⛈, Make sure to bring an Umbrella☔"
 else:
-    client = Client(ACCOUNT_SID, AUTH_TOKEN)
-    message = client.messages.create(
-        body="Weather is all clear today, Have fun!!!",
-        from_=PROXY,
-        to=PHONE
-    )
+    sms_body = "Weather is all clear today, Have fun!!!"
+
+# 5. Initialize client once and send the message
+client = Client(ACCOUNT_SID, AUTH_TOKEN)
+message = client.messages.create(
+    body=sms_body,
+    from_=PROXY,
+    to=PHONE
+)
+
+print(f"Message sent successfully! Status: {message.status}")
+
